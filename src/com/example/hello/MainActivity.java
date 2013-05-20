@@ -6,7 +6,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Menu;
@@ -15,6 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+/*
+
+http://developer.android.com/guide/topics/connectivity/bluetooth.html
+
+*/
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -41,10 +49,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 				log("Test");
 			}
 		});
-		//
+		// Sensor
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		
+		// Bluetooth
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothAdapter == null) {
+		    // Device does not support Bluetooth
+		}
+		if (!mBluetoothAdapter.isEnabled()) {
+		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		    int REQUEST_ENABLE_BT = 123;
+			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT );
+		}
+		//
 		log("Start");
 	}
 	
