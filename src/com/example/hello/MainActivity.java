@@ -1,7 +1,12 @@
 package com.example.hello;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Menu;
@@ -11,11 +16,15 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SensorEventListener {
 
 	private Button mButton = null;
 	private TextView mText = null;
 	private ScrollView mScroll = null;
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private long lastUpdate;
+	private boolean xReady = true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +41,24 @@ public class MainActivity extends Activity {
 				log("Test");
 			}
 		});
+		//
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		
+		log("Start");
 	}
+	
+	@Override
+	 protected void onResume() {
+	    super.onResume();
+	    mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+	  }
+
+	  @Override
+	  protected void onPause() {
+	    super.onPause();
+	    mSensorManager.unregisterListener(this);
+	  }
 	
 	public void log(String msg) {
 		Spanned html = Html.fromHtml(
@@ -48,6 +74,40 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+	    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+	      getAccelerometer(event);
+	    }
+	}
+	
+	 @Override
+	 public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 	
 
+	private void getAccelerometer(SensorEvent event) {
+		float[] values = event.values;
+		// Movement
+		float x = values[0];
+		float y = values[1];
+		float z = values[2];
+		// log(Float.toString(x));
+		long actualTime = System.currentTimeMillis();
+		if (actualTime - lastUpdate < 200) {
+			return;
+		}
+		lastUpdate = actualTime;
+		if (x > 4.0 && xReady ) {
+			log("Tilt left");
+			xReady = false;
+		}
+		if (x < -4.0 && xReady) {
+			log("Tilt right");
+			xReady = false;
+		}
+		if (x < 1.0 && x > -1.0) {
+			xReady = true;
+		}
+	}
+	 
 }
