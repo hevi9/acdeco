@@ -108,6 +108,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		super.onDestroy();
 		if(mCommunicate != null) {
 			// mCommunicate.cancel();
+			mCommunicate.close(); // SIGSEGV, but at least closes socket
 		}
 		Log.i("acdeco", "onDestroy");
 	}
@@ -296,6 +297,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 				log("write error");
 			}
 		}
+
+		public void close() {
+			try {
+				mmSocket.close();
+			} catch (IOException ex) {
+				log(ex.toString());
+			}
+		}		
 		
 		public void cancel() {
 			try {
