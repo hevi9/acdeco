@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2013 Petri Heinilä, License LGPL 2.1
+ * 
+ *  acdeco - Accelerated Desktop Control
+ *  
+ *  Android part. Read accelerator sensor and send
+ *  signal messages to desktop over bluetooth.
+ */
+
 package com.example.hello;
 
 import java.io.IOException;
@@ -7,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.UUID;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,11 +41,6 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-/*
-
- http://developer.android.com/guide/topics/connectivity/bluetooth.html
-
- */
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -53,9 +56,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public UUID SERVICE_UUID = UUID
 			.fromString("350da82e-c15a-11e2-949e-001e4fbfb714");
 	private Communicate mCommunicate = null;
-
-	// private static final UUID SERVICE_UUID =
-	// UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,17 +76,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometer = mSensorManager
 				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		// Bluetooth
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (mBluetoothAdapter == null) {
-			// Device does not support Bluetooth
-		}
 		if (!mBluetoothAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			int REQUEST_ENABLE_BT = 123;
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
-		//
 		log("Start");
 	}
 
@@ -127,7 +124,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -220,18 +216,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			mmDevice = device;
 			BluetoothSocket tmp = null;
 			log("Socket for " + SERVICE_UUID.toString());
-//			try {
-//				Method m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
-//				tmp = (BluetoothSocket) m.invoke(device, Integer.valueOf(1)); // 1==RFCOMM channel code 
-//			} catch (NoSuchMethodException e) {
-//				e.printStackTrace();
-//			} catch (IllegalArgumentException e) {
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				e.printStackTrace();
-//			} catch (InvocationTargetException e) {
-//				e.printStackTrace();
-//			}
 			try {
 				tmp = device.createRfcommSocketToServiceRecord(SERVICE_UUID);
 			} catch (IOException e) {
