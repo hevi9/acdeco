@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Petri Heinilä, License LGPL 2.1
+ * Copyright (C) 2013 Petri Heinilï¿½, License LGPL 2.1
  * 
  *  acdeco - Accelerated Desktop Control
  *  
@@ -84,20 +84,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 			int REQUEST_ENABLE_BT = 123;
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
-		log("Start");
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 		mSensorManager.registerListener(this, mAccelerometer,
 				SensorManager.SENSOR_DELAY_NORMAL);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mSensorManager.unregisterListener(this);
+		log("Start");
 	}
 
 	@Override
@@ -107,8 +96,21 @@ public class MainActivity extends Activity implements SensorEventListener {
 			// mCommunicate.cancel();
 			mCommunicate.close(); // SIGSEGV, but at least closes socket
 		}
+		mSensorManager.unregisterListener(this);
 		Log.i("acdeco", "onDestroy");
 	}
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+
 
 	public void log(final String msg) {
 		runOnUiThread(new Runnable() {
